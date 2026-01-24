@@ -1,7 +1,7 @@
 import google.generativeai as genai
 
 # Initialize the Gemini client
-genai.configure(api_key="AIzaSyCe5-dGUK8iQO0aGo9WuOQt5hcd7_9aAQY")
+genai.configure(api_key="")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 # System prompt that defines the chatbot's personality and expertise
@@ -73,5 +73,6 @@ git init
 
 if __name__ == "__main__":
     main()
+
 
 
