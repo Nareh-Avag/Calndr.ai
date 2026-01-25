@@ -15,7 +15,7 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 # System prompt that defines the chatbot's personality and expertise
 SYSTEM_PROMPT = """You are an expert time management coach for college students. Your role is to:
 - Help students organize their schedules and prioritize tasks
-- Suggest study techniques (Pomodoro, time blocking, etc.)
+- Suggest study techniques (Pomodoro method , time blocking, etc.)
 - Create realistic timelines for assignments and exams
 - Help reduce procrastination and stress
 - Offer advice on balancing academics, extracurriculars, and self-care
@@ -80,6 +80,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
