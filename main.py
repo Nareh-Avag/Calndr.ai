@@ -1,7 +1,15 @@
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize the Gemini client
-genai.configure(api_key="")
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY environment variable not set. Create a .env file with your API key.")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 # System prompt that defines the chatbot's personality and expertise
@@ -28,7 +36,7 @@ def main():
     print("managing your schedule, studying, or organizing your tasks!")
     print("Type 'exit' to quit.\n")
     
-    
+    conversation_history = [
         genai.protos.Content(
             role="user",
             parts=[genai.protos.Part(text=SYSTEM_PROMPT)]
@@ -72,7 +80,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 
