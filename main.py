@@ -28,8 +28,7 @@ def main():
     print("managing your schedule, studying, or organizing your tasks!")
     print("Type 'exit' to quit.\n")
     
-    conversation_history = [cd C:\Users\nareh\OneDrive\Documents\HoyaHax
-git init
+    
         genai.protos.Content(
             role="user",
             parts=[genai.protos.Part(text=SYSTEM_PROMPT)]
@@ -73,6 +72,7 @@ git init
 
 if __name__ == "__main__":
     main()
+
 
 
 
