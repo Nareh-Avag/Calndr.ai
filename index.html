@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>calndr.ai</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: rgb(255, 255, 255);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-bottom: 5px;
+    }
+    p {
+      color: #555555;
+      margin-bottom: 15px;
+    }
+    #chat {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 75%;
+      padding: 8px;
+    }
+    button {
+      width: 22%;
+      padding: 8px;
+      margin-left: 3%;
+      cursor: pointer;
+    }
+    .user {
+      color: #2563eb;
+      margin: 5px 0;
+    }
+    .bot {
+      color: #111827;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to calndr.ai!</h1>
+    <p>Tell me about your schedule and I’ll help you plan your time accordingly.</p>
+
+    <div id="chat"></div>
+
+    <input id="input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      addMessage("You", message, "user");
+      input.value = "";
+
+      // this part talks to the python backend
+      const response = await fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      addMessage("calndr.ai", data.reply, "bot");
+    }
+
+    function addMessage(sender, text, className) {
+      const div = document.createElement("div");
+      div.className = className;
+      div.textContent = sender + ": " + text;
+      document.getElementById("chat").appendChild(div);
+    }
+  </script>
+</body>
+</html>
