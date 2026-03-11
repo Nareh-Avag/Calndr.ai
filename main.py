@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize the Gemini client
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable not set. Create a .env file with your API key.")
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-2.5-flash")
 
 # System prompt that defines the chatbot's personality and expertise
 SYSTEM_PROMPT = """You are an expert time management coach for college students. Your role is to:
@@ -80,6 +75,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
