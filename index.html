@@ -2,94 +2,573 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>calndr.ai</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>calndr.ai — time, thought through</title>
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+ 
   <style>
+    :root {
+      --bg-0:      #0b0c10;
+      --bg-1:      #111319;
+      --bg-2:      #161922;
+      --ink:       #e9e6df;
+      --ink-dim:   #9a978f;
+      --ink-faint: #4a4a4a;
+      --line:      rgba(233, 230, 223, 0.08);
+      --line-2:    rgba(233, 230, 223, 0.14);
+      --amber:     #e9b872;
+      --amber-hot: #f5c88a;
+      --blush:     #d88570;
+      --sage:      #8fb09a;
+      --violet:    #9b8cc4;
+    }
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body { height: 100%; }
+ 
     body {
-      font-family: Arial, sans-serif;
-      background-color: rgb(255, 255, 255);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Inter Tight', sans-serif;
+      background: var(--bg-0);
+      color: var(--ink);
+      overflow: hidden;
+      position: relative;
+      font-feature-settings: 'ss01', 'cv11';
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+ 
+    /* ——— Ambient background ——— */
+    .ambient {
+      position: fixed; inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.35;
+      mix-blend-mode: screen;
+      animation: drift 24s ease-in-out infinite alternate;
+    }
+    .orb.a { width: 520px; height: 520px; background: var(--amber); top: -160px; left: -120px; }
+    .orb.b { width: 460px; height: 460px; background: var(--violet); bottom: -140px; right: -100px; animation-delay: -8s; }
+    .orb.c { width: 300px; height: 300px; background: var(--blush); top: 40%; left: 55%; opacity: .22; animation-delay: -14s; }
+ 
+    @keyframes drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(40px, -30px) scale(1.08); }
+      100% { transform: translate(-30px, 40px) scale(0.96); }
+    }
+ 
+    /* fine grain overlay */
+    .grain {
+      position: fixed; inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.06;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+ 
+    /* ——— Layout ——— */
+    .stage {
+      position: relative;
+      z-index: 2;
       height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 32px 28px;
     }
-    .container {
-      background: white;
-      padding: 25px;
-      width: 500px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+ 
+    /* ——— Header ——— */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      animation: fadeUp 0.9s 0.05s cubic-bezier(.22,.61,.36,1) both;
     }
-    h1 {
-      margin-bottom: 5px;
+ 
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    p {
-      color: #555555;
-      margin-bottom: 15px;
+    .brand-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .mark {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 34px;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .mark em {
+      font-style: italic;
+      color: var(--amber);
+      font-weight: 400;
+    }
+    .ver {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-dim);
+      padding: 3px 7px;
+      border: 1px solid var(--line-2);
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tagline {
+      font-size: 13px;
+      color: var(--ink-dim);
+      letter-spacing: 0.01em;
+    }
+    .tagline span { color: var(--amber); font-style: italic; font-family: 'Playfair Display', serif; }
+ 
+    .meta {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-dim);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      line-height: 1.5;
+    }
+    .meta .clock {
+      font-size: 18px;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    .meta .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      justify-content: flex-end;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      background: var(--sage);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(143, 176, 154, .55);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(143, 176, 154, .55); }
+      70%  { box-shadow: 0 0 0 8px rgba(143, 176, 154, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(143, 176, 154, 0); }
+    }
+ 
+    /* ——— Chat ——— */
+    .chat-wrap {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 0 16px;
+      animation: fadeUp 0.9s 0.18s cubic-bezier(.22,.61,.36,1) both;
     }
     #chat {
-      height: 300px;
+      height: 100%;
       overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding-right: 8px;
+      scroll-behavior: smooth;
     }
-    input {
-      width: 75%;
-      padding: 8px;
+ 
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-track { background: transparent; }
+    #chat::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 3px; }
+    #chat::-webkit-scrollbar-thumb:hover { background: rgba(233, 230, 223, 0.22); }
+ 
+    .msg {
+      display: flex;
+      margin-bottom: 16px;
+      animation: msgIn 0.5s cubic-bezier(.22,.61,.36,1) both;
     }
-    button {
-      width: 22%;
-      padding: 8px;
-      margin-left: 3%;
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .msg.user { justify-content: flex-end; }
+ 
+    .bubble {
+      max-width: 78%;
+      padding: 14px 18px;
+      font-size: 15px;
+      line-height: 1.55;
+      position: relative;
+    }
+ 
+    .msg.user .bubble {
+      background: linear-gradient(135deg, rgba(233, 184, 114, 0.14), rgba(216, 133, 112, 0.10));
+      border: 1px solid rgba(233, 184, 114, 0.28);
+      color: var(--ink);
+      border-radius: 16px 16px 4px 16px;
+      backdrop-filter: blur(6px);
+    }
+ 
+    .msg.bot .bubble {
+      background: rgba(22, 25, 34, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 4px 16px 16px 16px;
+      backdrop-filter: blur(6px);
+    }
+ 
+    .who {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .msg.user .who { justify-content: flex-end; color: var(--amber); }
+    .who::before {
+      content: "";
+      width: 4px; height: 4px; border-radius: 50%;
+      background: currentColor;
+      opacity: .6;
+    }
+ 
+    /* typing indicator */
+    .typing { display: inline-flex; gap: 5px; padding: 6px 2px; }
+    .typing span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink-dim);
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30%           { transform: translateY(-4px); opacity: 1; }
+    }
+ 
+    /* empty state / suggestions */
+    .intro {
+      padding: 40px 4px 20px;
+      animation: fadeUp 0.9s 0.35s cubic-bezier(.22,.61,.36,1) both;
+    }
+    .intro h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+    .intro h2 em { color: var(--amber); }
+    .intro p {
+      font-size: 14px;
+      color: var(--ink-dim);
+      max-width: 44ch;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--ink-dim);
+      background: transparent;
+      border: 1px solid var(--line-2);
+      padding: 8px 12px;
+      border-radius: 999px;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .user {
-      color: #2563eb;
-      margin: 5px 0;
+    .chip:hover {
+      color: var(--amber);
+      border-color: rgba(233, 184, 114, 0.5);
+      background: rgba(233, 184, 114, 0.05);
+      transform: translateY(-1px);
     }
-    .bot {
-      color: #111827;
-      margin: 5px 0;
+    .chip::before { content: "→ "; opacity: 0.5; }
+ 
+    /* ——— Composer ——— */
+    .composer {
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+      animation: fadeUp 0.9s 0.25s cubic-bezier(.22,.61,.36,1) both;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(22, 25, 34, 0.6);
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      padding: 6px 6px 6px 18px;
+      transition: border-color 0.25s ease, background 0.25s ease;
+      backdrop-filter: blur(6px);
+    }
+    .input-row:focus-within {
+      border-color: rgba(233, 184, 114, 0.5);
+      background: rgba(22, 25, 34, 0.85);
+    }
+    .input-row::before {
+      content: "›";
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--amber);
+      font-size: 22px;
+      line-height: 1;
+      margin-right: -4px;
+    }
+    #input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--ink);
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 15px;
+      padding: 14px 4px;
+      letter-spacing: 0.005em;
+    }
+    #input::placeholder { color: var(--ink-faint); font-style: italic; }
+ 
+    button.send {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg-0);
+      background: var(--amber);
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button.send:hover {
+      background: var(--amber-hot);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px -6px rgba(233, 184, 114, 0.5);
+    }
+    button.send:active { transform: translateY(0); }
+    button.send .kbd {
+      font-size: 9px;
+      opacity: 0.6;
+      border: 1px solid rgba(11,12,16,0.3);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+ 
+    .foot {
+      margin-top: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    /* ——— Responsive ——— */
+    @media (max-width: 640px) {
+      .stage { padding: 20px 18px; }
+      .mark { font-size: 26px; }
+      .meta .clock { font-size: 15px; }
+      .intro h2 { font-size: 22px; }
+      .bubble { max-width: 88%; font-size: 14px; }
+      button.send .kbd { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome to calndr.ai!</h1>
-    <p>Tell me about your schedule and I’ll help you plan your time accordingly.</p>
-
-    <div id="chat"></div>
-
-    <input id="input" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
+ 
+  <div class="ambient" aria-hidden="true">
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+    <div class="orb c"></div>
   </div>
-
+  <div class="grain" aria-hidden="true"></div>
+ 
+  <main class="stage">
+ 
+    <header>
+      <div class="brand">
+        <div class="brand-row">
+          <div class="mark">calndr<em>.ai</em></div>
+          <span class="ver">v 0.1 · beta</span>
+        </div>
+        <div class="tagline">time, <span>thought through</span> — your calendar's quiet assistant.</div>
+      </div>
+      <div class="meta">
+        <div class="clock" id="clock">—</div>
+        <div id="date">—</div>
+        <div class="status"><span>online</span><span class="dot"></span></div>
+      </div>
+    </header>
+ 
+    <section class="chat-wrap">
+      <div id="chat">
+        <div class="intro" id="intro">
+          <h2>Tell me about your <em>week</em>.</h2>
+          <p>Deadlines, recurring meetings, the things you keep meaning to do — just write it out the way you'd tell a friend. I'll turn it into a plan.</p>
+          <div class="chips">
+            <button class="chip" data-q="I have three deadlines next week and a dentist appointment — help me plan.">plan my week</button>
+            <button class="chip" data-q="Find me two hours of deep work time tomorrow morning.">find deep work time</button>
+            <button class="chip" data-q="I'm traveling Thursday — reschedule my recurring meetings.">reschedule around travel</button>
+            <button class="chip" data-q="What does my Friday look like?">peek at friday</button>
+          </div>
+        </div>
+      </div>
+    </section>
+ 
+    <div class="composer">
+      <div class="input-row">
+        <input id="input" placeholder="what's on your mind?" autocomplete="off" />
+        <button class="send" onclick="sendMessage()">
+          Send <span class="kbd">↵</span>
+        </button>
+      </div>
+      <div class="foot">
+        <span>encrypted · local-first</span>
+        <span id="count">0 messages</span>
+      </div>
+    </div>
+ 
+  </main>
+ 
   <script>
+    // live clock
+    const clockEl = document.getElementById('clock');
+    const dateEl = document.getElementById('date');
+    function tick() {
+      const now = new Date();
+      const h = now.getHours().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const s = now.getSeconds().toString().padStart(2, '0');
+      clockEl.textContent = `${h}:${m}:${s}`;
+      dateEl.textContent = now.toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric'
+      }).toUpperCase();
+    }
+    tick(); setInterval(tick, 1000);
+ 
+    // chips
+    document.querySelectorAll('.chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.getElementById('input').value = c.dataset.q;
+        document.getElementById('input').focus();
+      });
+    });
+ 
+    // enter to send
+    document.getElementById('input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+ 
+    let msgCount = 0;
+    const countEl = document.getElementById('count');
+ 
+    function removeIntro() {
+      const intro = document.getElementById('intro');
+      if (intro) intro.remove();
+    }
+ 
+    function addMessage(sender, text, role) {
+      removeIntro();
+      const chat = document.getElementById('chat');
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + role;
+ 
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+ 
+      const who = document.createElement('div');
+      who.className = 'who';
+      who.textContent = sender;
+ 
+      const body = document.createElement('div');
+      body.textContent = text;
+ 
+      bubble.appendChild(who);
+      bubble.appendChild(body);
+      wrap.appendChild(bubble);
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+ 
+      msgCount++;
+      countEl.textContent = `${msgCount} message${msgCount === 1 ? '' : 's'}`;
+      return wrap;
+    }
+ 
+    function addTyping() {
+      removeIntro();
+      const chat = document.getElementById('chat');
+      const wrap = document.createElement('div');
+      wrap.className = 'msg bot';
+      wrap.id = 'typing-bubble';
+      wrap.innerHTML = `
+        <div class="bubble">
+          <div class="who">calndr</div>
+          <div class="typing"><span></span><span></span><span></span></div>
+        </div>`;
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+    }
+ 
+    function removeTyping() {
+      const t = document.getElementById('typing-bubble');
+      if (t) t.remove();
+    }
+ 
     async function sendMessage() {
-      const input = document.getElementById("input");
+      const input = document.getElementById('input');
       const message = input.value.trim();
       if (!message) return;
-
-      addMessage("You", message, "user");
-      input.value = "";
-
-      // this part talks to the python backend
-      const response = await fetch("http://127.0.0.1:5000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
-
-      const data = await response.json();
-      addMessage("Calndr.ai", data.reply, "bot");
-    }
-
-    function addMessage(sender, text, className) {
-      const div = document.createElement("div");
-      div.className = className;
-      div.textContent = sender + ": " + text;
-      document.getElementById("chat").appendChild(div);
+ 
+      addMessage('you', message, 'user');
+      input.value = '';
+      addTyping();
+ 
+      try {
+        const response = await fetch('http://127.0.0.1:5000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        removeTyping();
+        addMessage('calndr', data.reply, 'bot');
+      } catch (err) {
+        removeTyping();
+        addMessage('calndr', 'connection to the backend dropped. is the python server running on :5000?', 'bot');
+      }
     }
   </script>
 </body>
