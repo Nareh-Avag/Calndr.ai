@@ -2,7 +2,7 @@
  
 ✨ **Team Ownership** ✨  
 **Frontend:** Nola Olaniyi, Nareh Avagyan  
-**Backend:** Nareh Avagyan, Nola Olaniyi
+**Backend:** Nareh Avagyan
  
 ---
  
@@ -10,7 +10,7 @@
  
 An AI-powered chatbot that builds personalized schedules to help users plan their daily lives more efficiently and maximize productivity.
  
-As college students balancing rigorous coursework with other aspects of our lives, managing time efficiently is a constant challenge. Calndr AI was built to act as a personal scheduling assistant — tell it about your day and it'll help you organize your time.
+As college students balancing rigorous coursework with other aspects of our lives, managing time efficiently is a constant challenge. Calndr AI was built to act as a personal scheduling assistant, tell it about your day and it'll help you organize your time.
  
 ---
  
